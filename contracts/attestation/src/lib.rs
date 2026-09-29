@@ -3922,6 +3922,8 @@ mod rate_limit_test;
 mod registry_test;
 #[cfg(all(test, feature = "full-tests"))]
 mod replay_nonce_test;
+#[cfg(test)]
+mod require_admin_adversarial_test;
 #[cfg(all(test, feature = "full-tests"))]
 mod revocation_test;
 #[cfg(all(test, feature = "full-tests"))]

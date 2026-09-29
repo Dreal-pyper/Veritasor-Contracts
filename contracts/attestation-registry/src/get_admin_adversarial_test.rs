@@ -23,12 +23,7 @@ use soroban_sdk::testutils::Address as _;
 use soroban_sdk::{Address, Env};
 
 /// `(env, client, registry_id, admin)` — initialized registry under mocked auth.
-fn setup() -> (
-    Env,
-    AttestationRegistryClient<'static>,
-    Address,
-    Address,
-) {
+fn setup() -> (Env, AttestationRegistryClient<'static>, Address, Address) {
     let env = Env::default();
     env.mock_all_auths();
     let registry_id = env.register(AttestationRegistry, ());
@@ -103,9 +98,7 @@ fn get_admin_is_gated_by_the_initialized_flag_not_the_admin_entry() {
     let orphan_admin = Address::generate(&env);
 
     env.as_contract(&registry_id, || {
-        env.storage()
-            .instance()
-            .set(&DataKey::Admin, &orphan_admin);
+        env.storage().instance().set(&DataKey::Admin, &orphan_admin);
     });
 
     assert_eq!(
@@ -244,7 +237,10 @@ fn get_admin_never_leaks_across_registry_instances() {
     let admin_b2 = Address::generate(&env);
     client_b.transfer_admin(&admin_b2);
     assert_eq!(client_b.get_admin(), Some(admin_b2));
-    assert_eq!(stored_admin(&env, &id_a), Some(client_a.get_admin().unwrap()));
+    assert_eq!(
+        stored_admin(&env, &id_a),
+        Some(client_a.get_admin().unwrap())
+    );
 }
 
 /// The read returns the address verbatim: an admin that is itself a deployed

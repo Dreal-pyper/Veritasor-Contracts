@@ -161,11 +161,19 @@ fn initialize_writes_exactly_the_four_governance_keys() {
 
     assert_eq!(
         raw_governance(&env, &registry_id),
-        (Some(admin.clone()), Some(initial_impl.clone()), Some(7u32), Some(true))
+        (
+            Some(admin.clone()),
+            Some(initial_impl.clone()),
+            Some(7u32),
+            Some(true)
+        )
     );
     env.as_contract(&registry_id, || {
         let storage = env.storage().instance();
-        assert_eq!(storage.get::<DataKey, Address>(&DataKey::PreviousImplementation), None);
+        assert_eq!(
+            storage.get::<DataKey, Address>(&DataKey::PreviousImplementation),
+            None
+        );
         assert_eq!(storage.get::<DataKey, u32>(&DataKey::PreviousVersion), None);
     });
     assert_eq!(client.get_previous_implementation(), None);
@@ -184,7 +192,9 @@ fn initialize_stores_the_admin_argument_verbatim() {
     assert_eq!(client.get_admin(), Some(nominated.clone()));
     env.as_contract(&registry_id, || {
         assert_eq!(
-            env.storage().instance().get::<DataKey, Address>(&DataKey::Admin),
+            env.storage()
+                .instance()
+                .get::<DataKey, Address>(&DataKey::Admin),
             Some(nominated)
         );
     });
@@ -366,7 +376,8 @@ fn initialize_guard_is_stable_across_ledger_time() {
     let (env, client, registry_id, admin, initial_impl) = setup_uninitialized();
     client.initialize(&admin, &initial_impl, &1u32);
 
-    env.ledger().set_timestamp(env.ledger().timestamp() + 60 * 60 * 24 * 365);
+    env.ledger()
+        .set_timestamp(env.ledger().timestamp() + 60 * 60 * 24 * 365);
 
     let rejected = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         client.initialize(&admin, &initial_impl, &2u32);
